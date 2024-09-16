@@ -1,0 +1,26 @@
+# Define the data
+Name <- c("Jeb", "Donald", "Ted", "Marco", "Carly", "Hillary", "Bernie")
+ABC_poll_results <- c(4, 62, 51, 21, 2, 14, 15)
+CBS_poll_results <- c(12, 75, 43, 19, 1, 21, 19)
+
+# Calculate total support in each poll
+total_support_ABC <- sum(ABC_poll_results)
+total_support_CBS <- sum(CBS_poll_results)
+
+# Create a data frame for poll results
+data <- data.frame(Name, ABC_poll_results, CBS_poll_results)
+
+# Plot each candidate support in ABC and CBS polls
+barplot(
+  t(data[, c("ABC_poll_results", "CBS_poll_results")]),
+  beside = TRUE,
+  names.arg = data$Name,
+  col = c("blue", "red"),
+  ylim = c(0, 80),
+  xlab = "Candidate Name",
+  ylab = "Support Percentage",
+  main = "2016 Presidential Election Poll Results: ABC vs. CBS"
+)
+
+# Add a legend
+legend("topright", legend = c("ABC", "CBS"), fill = c("blue", "red"))
