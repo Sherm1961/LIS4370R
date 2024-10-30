@@ -103,6 +103,9 @@ data_new <- anti_join(data_new, zero_score_data, by = c("scorePerMinute", "name"
 data_new <- anti_join(data_new, zero_headshots_data, by = c("headshots", "name"))
 data_new <- anti_join(data_new, zero_gp10_data, by = c("gamesPlayed", "name"))
 
+summary(data_new)
+
+
 
 #creating new column using weighted values for KD, Headshots, scorePerMin, timePlayed
 #levels of skill: beginner, intermediate, advanced (listed as 0, 1, 2 for easy computation)
@@ -123,21 +126,41 @@ dataTP <- ifelse(data_new$timePlayed <= 500, 0,
 data_new$weighted <- dataKD + dataHS + dataSPM + dataTP    #original scores
 data_new$weighted2 <- dataKD*1.2 + dataHS*1.4 + dataSPM*.3 + dataTP*1.1       #weighted values
 
+#add win rate?
+#see kd of each skill bracket. Total
+
+
 # 8 is highest score so breakdown by 3
-data_new$SkillLevel <- ifelse(data_new$weighted <= 3, "Beginner", 
-                              ifelse(data_new$weighted > 3 & data_new$kdRatio <= 6, "Intermediate", "Advanced")) #Data for kd breakdown
+data_new$SkillLevel <- ifelse(data_new$weighted2 <= 3, "Beginner", 
+                              ifelse(data_new$weighted2 > 3 & data_new$weighted2 <= 6, "Intermediate", "Advanced")) #Data for kd breakdown
 
 
 
+#
 
 
-
-#make count of each kdRatio
+#make count of each kdRatio for all players      get from github
 # Sample KD ratios for multiple gamers
-kd_ratio <- data_new$kdRatio
+
+#figure out big 5 values (KD, Headshots, kills, deaths, average time per round)
+
+#wins (changed due to squads carrying, or new player is actual skilled with lots of previous experience)
+
+
+
+
+
+
+
+
+
+#make count of each kdRatio for Beginner players
+# Sample KD ratios for multiple gamers
+
+kd_ratio_beg <- subset(data_new, SkillLevel == 'Beginner')
 
 # Create intervals of 0.5 and categorize the KD ratios
-bin <- cut(kd_ratio, breaks = seq(0, 3, by = 0.1), right = FALSE)
+bin <- cut(kd_ratio_beg$kdRatio, breaks = seq(0, 3, by = 0.1), right = FALSE)
 
 # Count the number of gamers in each KD bin
 kd_count <- table(bin)
@@ -149,6 +172,49 @@ barplot(kd_count,
         ylab = "Count", 
         col = "lightblue", 
         border = "black")
+
+
+#make count of each kdRatio for Intermediate players
+# Sample KD ratios for multiple gamers
+
+kd_ratio_int <- subset(data_new, SkillLevel == 'Intermediate')
+
+# Create intervals of 0.5 and categorize the KD ratios
+bin <- cut(kd_ratio_int$kdRatio, breaks = seq(0, 3, by = 0.1), right = FALSE)
+
+# Count the number of gamers in each KD bin
+kd_count <- table(bin)
+
+# Create a bar plot
+barplot(kd_count, 
+        main = "Gamer KD vs Count (0.5 Intervals)", 
+        xlab = "KD Ratio Intervals", 
+        ylab = "Count", 
+        col = "lightblue", 
+        border = "black")
+
+
+
+
+#make count of each kdRatio for advanced players
+# Sample KD ratios for multiple gamers
+
+kd_ratio_adv <- subset(data_new, SkillLevel == 'Advanced')
+
+# Create intervals of 0.5 and categorize the KD ratios
+bin <- cut(kd_ratio_adv$kdRatio, breaks = seq(0, 3, by = 0.1), right = FALSE)
+
+# Count the number of gamers in each KD bin
+kd_count <- table(bin)
+
+# Create a bar plot
+barplot(kd_count, 
+        main = "Gamer KD vs Count (0.5 Intervals)", 
+        xlab = "KD Ratio Intervals", 
+        ylab = "Count", 
+        col = "lightblue", 
+        border = "black")
+
 
   
 
