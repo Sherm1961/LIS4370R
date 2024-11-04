@@ -1,0 +1,13 @@
+Package: smplMath
+Type: Package
+Title: Returns Data Relations per Variable and Generates Separate Visualization on Data
+Version: 0.1.0
+Author: "Sherman LaCost [aut, cre]"
+Maintainer: The package maintainer <sherman.b.lacost@gmail.com> 
+Description: Simple to use package to compute and see if your data positively or negatively related,
+    can generate visualizations based on provided data up to 3 or 4 values/columns. Supposed to simplify the process
+    of quick and simple visualizations as well as basic analytics just by inputing data
+Depends: ggplot2, dplyr, e1071, caret, kernlab
+License: CCO
+Encoding: UTF-8
+LazyData: true
