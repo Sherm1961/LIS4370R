@@ -106,43 +106,71 @@ data_new <- anti_join(data_new, zero_gp10_data, by = c("gamesPlayed", "name"))
 summary(data_new)
 
 
+#Old code for breakdown
+#dataKD <- ifelse(data_new$kdRatio <= 0.5, 0, 
+#                 ifelse(data_new$kdRatio > 0.5 & data_new$kdRatio <= 1.3, 1, 2)) #Data for kd breakdown
 
-#creating new column using weighted values for KD, Headshots, scorePerMin, timePlayed
+#dataHS <- ifelse(data_new$headshots <= 2000, 0, 
+#                 ifelse(data_new$headshots > 2000 & data_new$headshots <= 4000, 1, 2)) #Data for headshot breakdown
+
+
+
+#values selected for ranges are 1st Q, and Mean anything higher than mean is advanced range
+
+#new creating new column using weighted values for (KD, Headshots, kills, deaths, average time per round)
 #levels of skill: beginner, intermediate, advanced (listed as 0, 1, 2 for easy computation)
-dataKD <- ifelse(data_new$kdRatio <= 0.5, 0, 
-                 ifelse(data_new$kdRatio > 0.5 & data_new$kdRatio <= 1.3, 1, 2)) #Data for kd breakdown
+#uses first Quartile as first value, then mean    do we want mean or 3rd quartile to show advanced players
+dataKD <- ifelse(data_new$kdRatio <= 0.8164, 0, 
+                 ifelse(data_new$kdRatio > .8164 & data_new$kdRatio <= .9279, 1, 2)) #Data for kd breakdown
 
-dataHS <- ifelse(data_new$headshots <= 2000, 0, 
-                 ifelse(data_new$headshots > 2000 & data_new$headshots <= 4000, 1, 2)) #Data for headshot breakdown
+dataHS <- ifelse(data_new$headshots <= 255, 0, 
+                 ifelse(data_new$headshots > 255 & data_new$headshots <= 1417, 1, 2)) #Data for headshot breakdown
 
-dataSPM <- ifelse(data_new$scorePerMinute <= 140, 0, 
-                 ifelse(data_new$scorePerMinute > 140 & data_new$scorePerMinute <= 280, 1, 2)) #Data for scorePerMin breakdown
+dataK <-  ifelse(data_new$kills <= 1444, 0, 
+                 ifelse(data_new$kills > 1444 & data_new$kills <= 8456, 1, 2)) #Data for kills breakdown
 
-dataTP <- ifelse(data_new$timePlayed <= 500, 0, 
-                  ifelse(data_new$timePlayed > 500 & data_new$timePlayed <= 1400, 1, 2)) #Data for timePlayed breakdown
+dataD <-  ifelse(data_new$deaths <= 1648, 0, 
+                 ifelse(data_new$deaths > 1648 & data_new$deaths <= 8697, 1, 2)) #Data for death breakdown
+
+dataAT <-  ifelse(data_new$averageTime <= 2.315, 0, 
+                 ifelse(data_new$averageTime > 2.315 & data_new$averageTime <= 5.552, 1, 2)) #Data for death breakdown
+
+
+
 
 
 #score of previous 4 values added together but also multiplied by their weight 
-data_new$weighted <- dataKD + dataHS + dataSPM + dataTP    #original scores
-data_new$weighted2 <- dataKD*1.2 + dataHS*1.4 + dataSPM*.3 + dataTP*1.1       #weighted values
+data_new$weighted <- dataKD + dataHS + dataK + dataD + dataAT    #original scores
+data_new$weighted2 <- dataKD*1.3 + dataHS*1.4 + dataK*1.2 + dataD*.8 + dataAT*1.2      #weighted values
 
 #add win rate?
 #see kd of each skill bracket. Total
 
 
-# 8 is highest score so breakdown by 3
-data_new$SkillLevel <- ifelse(data_new$weighted2 <= 3, "Beginner", 
-                              ifelse(data_new$weighted2 > 3 & data_new$weighted2 <= 6, "Intermediate", "Advanced")) #Data for kd breakdown
+#11.8 is highest score so breakdown starting at 0 to 6 as beginner, 6 to 9 as intermediate and advanceed higher
+data_new$SkillLevel <- ifelse(data_new$weighted2 <= 5, "Beginner", 
+                              ifelse(data_new$weighted2 > 5 & data_new$weighted2 <= 10, "Intermediate", "Advanced")) #Data for kd breakdown
+
+#create count of each skill level
+count_beginner <- sum(data_new$SkillLevel == "Beginner")
+count_intermediate <- sum(data_new$SkillLevel == "Intermediate")
+count_advanced <- sum(data_new$SkillLevel == "Advanced")
 
 
 
-#
+
+
+
+
+#data cleaned
+#We have three brackets, he wants to branch them out.
 
 
 #make count of each kdRatio for all players      get from github
 # Sample KD ratios for multiple gamers
 
 #figure out big 5 values (KD, Headshots, kills, deaths, average time per round)
+#more exploration
 
 #wins (changed due to squads carrying, or new player is actual skilled with lots of previous experience)
 
@@ -222,10 +250,10 @@ barplot(kd_count,
 # Sample headshots
 hs_num <- data_new$headshots
 
-# Create intervals of 0.5 and categorize the KD ratios
+# Create intervals of 0.5 and categorize the hs ratios
 bin1 <- cut(hs_num, breaks = seq(0, 12000, by = 250), right = FALSE)
 
-# Count the number of gamers in each KD bin
+# Count the number of gamers in each hs bin
 hs_count <- table(bin1)
 
 # Create a bar plot
@@ -238,51 +266,71 @@ barplot(hs_count,
 
 
 
-#make count of each ScorePerMinute
-# Sample scorePerMinute
-spm_ratio <- data_new$scorePerMinute
+#make count of each kills
+# Sample kills
+kill_ratio <- data_new$kills
 
-# Create intervals of 0.5 and categorize the KD ratios
-bin2 <- cut(spm_ratio, breaks = seq(0, 415, by = 20), right = FALSE)
+# Create intervals of 0.5 and categorize the kill ratios
+bin2 <- cut(kill_ratio, breaks = seq(0, 66935, by = 5000), right = FALSE)
 
-# Count the number of gamers in each KD bin
-spm_count <- table(bin2)
+# Count the number of gamers in each kill bin
+kill_count <- table(bin2)
 
 # Create a bar plot
-barplot(spm_count, 
-        main = "Gamer spm vs Count", 
-        xlab = "ScorePerMinute Intervals", 
+barplot(kill_count, 
+        main = "Gamer kills vs Count", 
+        xlab = "Kill Intervals", 
         ylab = "Count", 
         col = "lightblue", 
         border = "black")
 
-#make count of each timePlayed
-# Sample timePlayed
-tp_ratio <- data_new$timePlayed
+#make count of each death
+# Sample deaths
+d_ratio <- data_new$deaths
 
-# Create intervals of 0.5 and categorize the KD ratios
-bin3 <- cut(tp_ratio, breaks = seq(0, 7480, by = 200), right = FALSE)
+# Create intervals of 0.5 and categorize the deaths ratios
+bin3 <- cut(d_ratio, breaks = seq(0, 67888, by = 2000), right = FALSE)
 
 # Count the number of gamers in each KD bin
-tp_count <- table(bin3)
+d_count <- table(bin3)
 
 # Create a bar plot
-barplot(tp_count, 
-        main = "Gamer tp vs Count", 
-        xlab = "TimePlayed Intervals", 
+barplot(d_count, 
+        main = "Gamer Deaths vs Count", 
+        xlab = "Deaths Intervals", 
         ylab = "Count", 
         col = "lightblue", 
         border = "black")
  
 
+#make count of each averageTime
+# Sample averageTime
+at_ratio <- data_new$averageTime
+
+# Create intervals of 0.5 and categorize the at ratios
+bin4 <- cut(at_ratio, breaks = seq(0, 96, by = 1), right = FALSE)
+
+# Count the number of gamers in each KD bin
+at_count <- table(bin4)
+
+# Create a bar plot
+barplot(d_count, 
+        main = "Gamer Deaths vs Count", 
+        xlab = "Deaths Intervals", 
+        ylab = "Count", 
+        col = "lightblue", 
+        border = "black")
+
+
+
 #make count of skill
 skill_ratio <- data_new$weighted  #unweighted values
 
 # Create intervals of 0.5 and categorize the KD ratios
-bin4 <- cut(skill_ratio, breaks = seq(0, 9, by = 3), right = FALSE)
+bin5 <- cut(skill_ratio, breaks = seq(0, 10, by = 3), right = FALSE)
 
 # Count the number of gamers in each KD bin
-skill_count <- table(bin4)
+skill_count <- table(bin5)
 
 # Create a bar plot of 3 skill levels
 barplot(skill_count, 
@@ -297,10 +345,10 @@ barplot(skill_count,
 skill_ratio <- data_new$weighted2  #weighted values
 
 # Create intervals of 0.5 and categorize the KD ratios
-bin5 <- cut(skill_ratio, breaks = seq(0, 9, by = 3), right = FALSE)
+bin6 <- cut(skill_ratio, breaks = seq(0, 12, by = 4), right = FALSE)
 
 # Count the number of gamers in each KD bin
-skill_count <- table(bin5)
+skill_count <- table(bin6)
 
 # Create a bar plot of 3 skill levels
 barplot(skill_count, 
@@ -309,6 +357,29 @@ barplot(skill_count,
         ylab = "Count", 
         col = "lightblue", 
         border = "black")
+
+
+
+
+
+
+
+#data cleaned
+#We have three brackets, he wants to branch them out?
+#make count of each kdRatio for all players      get from github     graph by sections? 
+# Sample KD ratios for multiple gamers
+#more exploration
+#wins (changed due to squads carrying, or new player is actual skilled with lots of previous experience)
+
+#count of advanced players with wins less than 340 (average of dataset)
+count_unskilled_advanced <- sum(data_new$SkillLevel == "Advanced" & data_new$wins <= 340)
+
+#9 unskilled advanced players
+advanced_unskilled_players <- data_new$name[data_new$SkillLevel == "Advanced" & data_new$wins <= 340]
+advanced_unskilled_players
+
+
+
 
 
 
