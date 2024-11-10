@@ -151,10 +151,47 @@ data_new$weighted2 <- dataKD*1.3 + dataHS*1.4 + dataK*1.2 + dataD*.8 + dataAT*1.
 data_new$SkillLevel <- ifelse(data_new$weighted2 <= 5, "Beginner", 
                               ifelse(data_new$weighted2 > 5 & data_new$weighted2 <= 10, "Intermediate", "Advanced")) #Data for kd breakdown
 
+data_new$SkillLevel_bd <- ifelse(data_new$weighted2 <= 2, "Beginner.1", 
+                              ifelse(data_new$weighted2 > 2 & data_new$weighted2 <= 4,
+                                     "Beginner.2", 
+                                     ifelse(data_new$weighted2 > 4 & data_new$weighted2 <= 5,
+                                            "Beginner.3", 
+                                            ifelse(data_new$weighted2 > 5 & data_new$weighted2 <= 7, 
+                                                   "Intermediate.1", 
+                                                   ifelse(data_new$weighted2 > 7 & data_new$weighted2 <= 9,
+                                                          "Intermediate.2",
+                                                          ifelse(data_new$weighted2 > 9 & data_new$weighted2 <= 10,
+                                                                 "Intermediate.3",
+                                                                 ifelse(data_new$weighted2 > 10 & data_new$weighted2 <= 10.6,
+                                                                        "Advanced.1",
+                                                                        ifelse(data_new$weighted2 > 10.6 & data_new$weighted2 <= 11.2,
+                                                                               "Advanced.2",
+                                                                               ifelse(data_new$weighted2 > 11.2 & data_new$weighted2 <= 11.8,
+                                                                                      "Advanced.3",
+                                                                                      "Advanced.3"
+                                                                               )))))))))
+
+
+
+
 #create count of each skill level
 count_beginner <- sum(data_new$SkillLevel == "Beginner")
 count_intermediate <- sum(data_new$SkillLevel == "Intermediate")
 count_advanced <- sum(data_new$SkillLevel == "Advanced")
+
+
+
+#Create 
+# Specify split ratio
+split_ratio <- .6  # 60% 
+
+# Calculate the number of observations for training
+train_indices <- sample(1:nrow(data_new), size = floor(split_ratio * nrow(data_new)))
+
+# Split the data
+train_data <- data_new[train_indices, ]
+validation_data <- data_new[-train_indices, ]
+
 
 
 
