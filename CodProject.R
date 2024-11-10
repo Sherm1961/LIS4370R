@@ -121,19 +121,19 @@ summary(data_new)
 #levels of skill: beginner, intermediate, advanced (listed as 0, 1, 2 for easy computation)
 #uses first Quartile as first value, then mean    do we want mean or 3rd quartile to show advanced players
 dataKD <- ifelse(data_new$kdRatio <= 0.8164, 0, 
-                 ifelse(data_new$kdRatio > .8164 & data_new$kdRatio <= .9279, 1, 2)) #Data for kd breakdown
+                 ifelse(data_new$kdRatio > .8164 & data_new$kdRatio <= 1.0325, 1, 2)) #Data for kd breakdown
 
 dataHS <- ifelse(data_new$headshots <= 255, 0, 
-                 ifelse(data_new$headshots > 255 & data_new$headshots <= 1417, 1, 2)) #Data for headshot breakdown
+                 ifelse(data_new$headshots > 255 & data_new$headshots <= 1967, 1, 2)) #Data for headshot breakdown
 
 dataK <-  ifelse(data_new$kills <= 1444, 0, 
-                 ifelse(data_new$kills > 1444 & data_new$kills <= 8456, 1, 2)) #Data for kills breakdown
+                 ifelse(data_new$kills > 1444 & data_new$kills <= 11223, 1, 2)) #Data for kills breakdown
 
 dataD <-  ifelse(data_new$deaths <= 1648, 0, 
-                 ifelse(data_new$deaths > 1648 & data_new$deaths <= 8697, 1, 2)) #Data for death breakdown
+                 ifelse(data_new$deaths > 1648 & data_new$deaths <= 11580, 1, 2)) #Data for death breakdown
 
 dataAT <-  ifelse(data_new$averageTime <= 2.315, 0, 
-                 ifelse(data_new$averageTime > 2.315 & data_new$averageTime <= 5.552, 1, 2)) #Data for death breakdown
+                 ifelse(data_new$averageTime > 2.315 & data_new$averageTime <= 4.362, 1, 2)) #Data for death breakdown
 
 
 
@@ -195,28 +195,7 @@ validation_data <- data_new[-train_indices, ]
 
 
 
-
-
-
-
-#data cleaned
-#We have three brackets, he wants to branch them out.
-
-
-#make count of each kdRatio for all players      get from github
-# Sample KD ratios for multiple gamers
-
-#figure out big 5 values (KD, Headshots, kills, deaths, average time per round)
-#more exploration
-
-#wins (changed due to squads carrying, or new player is actual skilled with lots of previous experience)
-
-
-
-
-
-
-
+#Graphs for personal use
 
 
 #make count of each kdRatio for Beginner players
@@ -397,91 +376,12 @@ barplot(skill_count,
 
 
 
-
-
-
-
-#data cleaned
-#We have three brackets, he wants to branch them out?
-#make count of each kdRatio for all players      get from github     graph by sections? 
-# Sample KD ratios for multiple gamers
-#more exploration
-#wins (changed due to squads carrying, or new player is actual skilled with lots of previous experience)
-
+#summary(data_new)
 #count of advanced players with wins less than 340 (average of dataset)
 count_unskilled_advanced <- sum(data_new$SkillLevel == "Advanced" & data_new$wins <= 340)
 
 #9 unskilled advanced players
 advanced_unskilled_players <- data_new$name[data_new$SkillLevel == "Advanced" & data_new$wins <= 340]
 advanced_unskilled_players
-
-
-
-
-
-
-
-
-
-
-
-
-
-#gamesPlayed dataset
-# Filter rows where gamesPlayed is exactly 0
-#zero_gp_data <- data[!is.na(data$gamesPlayed) & data$gamesPlayed == 0, ]
-
-# Display the players with 0 games Played
-#zero_gp_players <- zero_gp_data$`name`
-#print(zero_gp_players)
-
-# Remove rows from data that have zero_gp_data
-#data_filtered_gp <- anti_join(data, zero_gp_data, by = c("gamesPlayed", "name"))
-#print(data_filtered_gp)
-
-
-
-
-
-
-
-#597 with 0.00000000 score per minute with only 269 of those with any kills
-#scorePerMinute_desc <- sort(data$scorePerMinute, decreasing = FALSE)
-#print(scorePerMinute_desc)
-
-#92 players have kd of 6 or less than 7
-#717 players with kd between 0.5 and 1
-#we have a bunch of people with 0 games played
-
-
-
-
-#NOTES
-#zero_headshots_data <- data[!is.na(data$headshots) & data$headshots == 0 & data$kills == 0, ]
-#
-#headshots_desc <- sort(data$headshots, decreasing = FALSE)
-#print(headshots_desc)
-
-
-#time_desc <- sort(data$timePlayed, decreasing = TRUE)
-#print(time_desc)
-
-#time_desc <- sort(data$timePlayed, decreasing = TRUE)
-#print(time_desc)
-
-#time_updated <- time_desc[-(1:4), ]
-
-#df_sorted <- df[order(df$age), ]
-#print(df_sorted)
-
-#kdRatio_desc <- sort(data$kdRatio, decreasing = TRUE)
-#print(kdRatio_desc)
-
-
-
-
-
-
-
 
 
