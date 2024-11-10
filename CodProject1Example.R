@@ -260,31 +260,31 @@ data_new$SkillLevel1 <- ifelse(
 ) #Data for kd breakdown
 
 data_new$SkillLevel_bd1 <- ifelse(
-  data_new$weighted3 <= 3,
+  data_new$weighted3 <= 2,
   "Beginner.1",
   ifelse(
-    data_new$weighted3 > 3 & data_new$weighted3 <= 5,
+    data_new$weighted3 > 2 & data_new$weighted3 <= 4,
     "Beginner.2",
     ifelse(
-      data_new$weighted3 > 5 & data_new$weighted3 <= 7,
+      data_new$weighted3 > 4 & data_new$weighted3 <= 5,
       "Beginner.3",
       ifelse(
-        data_new$weighted3 > 7 & data_new$weighted3 <= 10,
+        data_new$weighted3 > 5 & data_new$weighted3 <= 7,
         "Intermediate.1",
         ifelse(
-          data_new$weighted3 > 10 & data_new$weighted3 <= 12,
+          data_new$weighted3 > 7 & data_new$weighted3 <= 9,
           "Intermediate.2",
           ifelse(
-            data_new$weighted3 > 12 & data_new$weighted3 <= 14,
+            data_new$weighted3 > 9 & data_new$weighted3 <= 10,
             "Intermediate.3",
             ifelse(
-              data_new$weighted3 > 14 & data_new$weighted3 <= 17,
+              data_new$weighted3 > 10 & data_new$weighted3 <= 12,
               "Advanced.1",
               ifelse(
-                data_new$weighted3 > 17 & data_new$weighted3 <= 19,
+                data_new$weighted3 > 12 & data_new$weighted3 <= 14,
                 "Advanced.2",
                 ifelse(
-                  data_new$weighted3 > 19 & data_new$weighted3 <= 20,
+                  data_new$weighted3 > 14 & data_new$weighted3 <= 15,
                   "Advanced.3",
                   "Advanced.3"
                 )
