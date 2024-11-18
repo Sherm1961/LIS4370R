@@ -1,0 +1,130 @@
+---
+title: "Sherm"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-11-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kernlab)
+library(ggplot2)
+library(dplyr)
+library(e1071)
+library(randomForest)
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+#they input data to data value, you assign column names to values you want used. start with 4.
+#general overview of the data. Has summary, creates plot
+
+#input csv file
+data <- read.csv("Replace_this")
+
+#select a max of 4 column names replace (a,b,c,d) with column index's, can  be less but not more than 4 columns
+a <- replace   #input dependent variable
+b <- replace   #input independent variable
+c <- replace   #input independent variable
+d <- replace   #input independent variable
+selected_names <- colnames(data)[c(a,b,c,d)]
+
+#can remove column if there is no value and its is still "replace"
+
+# Create a list of values from the selected_names
+data2 <- data[selected_names] #new dataframe of selected names
+
+#summary of data2
+summary(data2)
+
+new <- selected_names[1] #puts dependent varaible name in new
+
+#creates KSVM model with piped in value new
+model_ksvm <- ksvm(as.formula(paste(new, "~ .")), data = data2, kernel = "rbfdot", C = 1)
+
+#Generates summary and print of model_ksvm
+summary(model_ksvm)
+cat("\n\n") 
+print(model_ksvm)
+
+
+```{r cars}
+#Example code
+#input csv file
+data <- read.csv("Electricity1970.csv")
+
+#replace replace at A for dependent variable index's and b,c,d for independents
+a <- 2   #input dependent variable
+b <- 4   #input independent variable
+c <- 6   #input independent variable
+d <- 8   #input independent variable
+
+#select a max of 4 column names replace (a,b,c,d) with column index's, can  be less but not more than 4 columns
+selected_names <- colnames(data)[c(a,b,c,d)]
+
+# Create a list of values from the selected_names
+data2 <- data[selected_names] #new dataframe of selected names
+
+#summary of data2
+summary(data2)
+
+new <- selected_names[1] #puts dependent varaible name in new
+
+#creates KSVM model with piped in value new
+model_ksvm <- ksvm(as.formula(paste(new, "~ .")), data = data2, kernel = "rbfdot", C = 1)
+
+#Generates summary and print of model_ksvm
+summary(model_ksvm)
+cat("\n\n")
+print(model_ksvm)
+
+
+
+#later version could show printouts/summary of the 3 different versions, 1&2, 1&3, 1&4. Furthermore, it could show KSVM, SVM, Linear regression and/or random forest
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+# Perform PCA to reduce dimensions for plotting
+pca <- prcomp(data2[, -1], center = TRUE, scale. = TRUE)
+data2_pca <- data.frame(pca$x[, 1], data2[, 1])
+colnames(data2_pca) <- c("PC1", new)
+
+# Predict using the KSVM model
+predictions <- predict(model_ksvm, data2)
+
+# Create a data frame for plotting
+plot_data <- data.frame(PC1 = data2_pca$PC1, Actual = data2_pca[, new], Predicted = predictions)
+
+# Plot the KSVM model results
+ggplot(plot_data, aes(x = PC1)) +
+  geom_point(aes(y = Actual), color = "blue", label = "Data") +
+  geom_point(aes(y = Predicted), color = "red", label = "Model Prediction") +
+  labs(x = "Principal Component 1", y = new, title = "KSVM Model Prediction vs Actual Data") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_color_manual(values = c("blue", "red"))
+
+
+
+
+#Later functions would create several plots with different pairing of the dependent to independent variables
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
