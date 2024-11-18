@@ -219,12 +219,20 @@ Skill_Brack_Avg <- kmeans(Data_Scale_Avg[,c(14,19)], 3, iter.max = 10, nstart = 
 print(Skill_Brack_Avg)
 
 #Plots the K-Means Model for AVG
-fviz_cluster(Skill_Brack_Avg, data = Data_Scale[,c(14,19)],
+Avg_Cluster_Model <- fviz_cluster(Skill_Brack_Avg, data = Data_Scale[,c(14,19)],
              palette = c("#00AFBB", "#E7B800","#8c00f0"),
              geom = "point",
              ellipse.type = "convex", 
              ggtheme = theme_bw()
              )
+
+ Avg_Cluster_Model <- Avg_Cluster_Model + 
+   labs(title = " Avg Cluster Plot", 
+        x = "Win Rate", 
+        y = "Avg Scaled Values")
+ 
+ 
+print(Avg_Cluster_Model)
 
 
 # Section focused on the Sum version 
@@ -235,12 +243,25 @@ Data_Scale_Sum <- data.frame(Data_Scale[,-20])
  print(Skill_Brack_Sum)
 
 #Plots the K-Means Model for SUM
- fviz_cluster(Skill_Brack_Sum, data = Data_Scale[,c(14,19)],
+ Sum_Cluster_Model <- fviz_cluster(Skill_Brack_Sum, data = Data_Scale[,c(14,19)],
              palette = c("#00AFBB", "#E7B800","#8c00f0"),
              geom = "point",
              ellipse.type = "convex", 
            ggtheme = theme_bw()
             )
+ 
+ Sum_Cluster_Model <- Sum_Cluster_Model + 
+   labs(title = " Sum Cluster Plot", 
+        x = "Win Rate", 
+        y = "Sum Scaled Values")
+ 
+ 
+ Sum_Cluster_Model <- Sum_Cluster_Model + 
+   scale_color_manual(values = c("#00AFBB", "#E7B800", "#8c00f0"), 
+                      labels = c("Cluster A", "Cluster B", "Cluster C"))
+ 
+ 
+print(Sum_Cluster_Model)
 
 
 #Adds the Cluster value to the AVG Dataframe 
