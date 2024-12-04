@@ -18,11 +18,17 @@ library(rpart.plot)
 library(dplyr)
 library(ggpubr) #PLEASE ADD THEM 
 library(factoextra) #PLEASE ADD THEM 
-
-data <- read.csv("cod.csv")
-summary(data) #summary to overlook data
+library(corrplot)
 
 ```
+Intialize the data:
+```{r}
+setwd("C:\\Users\\alpha\\OneDrive\\Desktop\\Pred_Analytics\\Final Project")
+data <- read.csv("cod.csv")
+summary(data) #summary to overlook data
+```
+
+
 
 ```{r}
 #Main focus now is clean data based on KD, score per min, headshots and time played. Get rid of outliers and
@@ -184,29 +190,61 @@ print(Data_Scale)
 Data_Scale$TotalScale <- round(rowSums(Data_Scale[,1:18]),2)
 Data_Scale$AvgScale <- round(rowMeans(Data_Scale[,1:18]),2)
 print(Data_Scale)
+
+
+# Create a sample correlation matrix
+correlation_matrix <- cor(Data_Scale)
+
+# Visualize the correlation matrix
+corrplot(correlation_matrix)
 ```
 
 
 This does a linear regression test for Scaled values to win rate
 ```{r}
-
 # Fit the Linear Regression Model using columns from both data frames 
-model <- lm(Data_Scale$TotalScale ~ data_new$winRate) 
+#model1 <- lm(scale(Data_Scale$TotalScale) ~ scale(data_new$winRate)) 
+model1 <- lm(scale(data_new$winRate) ~ scale(Data_Scale$TotalScale)) 
 #Summarize the Model 
-summary(model)
+summary(model1)
 
 
 #This Generates the plot of the Linear regression model 
-plot( data_new$winRate, Data_Scale$TotalScale, main = "Linear Regression Model", xlab = "Win Rate", ylab = " Scaled Values", pch = 19, col = "blue")
+plot( scale(data_new$winRate), scale(Data_Scale$TotalScale), main = "Linear Regression Model", xlab = "Win Rate", ylab = " Scaled Values", pch = 19, col = "blue")
 
 #Creates the regression line for the model 
-abline(model,col = "red", lwd =2)
+abline(model1,col = "red", lwd =2)
 #Plots the model 
-plot(Data_Scale$TotalScale ~ data_new$winRate)
+plot(scale(data_new$winRate) ~ scale(Data_Scale$TotalScale))
 #Generates a histogram of the model 
-hist(Data_Scale$TotalScale, breaks = 30)
-#Summary of skill 
+hist(scale(Data_Scale$TotalScale), breaks = 30)
+#Summary of skill
+```
+
+
+```{r}
 print(summary(Data_Scale$TotalScale))
+
+
+
+
+# Fit the Linear Regression Model using columns from both data frames 
+model2 <- lm(Data_Scale$AvgScale ~ data_new$winRate) 
+#Summarize the Model 
+summary(model2)
+
+
+#This Generates the plot of the Linear regression model 
+plot( data_new$winRate, Data_Scale$AvgScale, main = "Linear Regression Model", xlab = "Win Rate", ylab = " Scaled Values", pch = 19, col = "blue")
+
+#Creates the regression line for the model 
+abline(model2,col = "red", lwd =2)
+#Plots the model 
+plot(Data_Scale$AvgScale ~ data_new$winRate)
+#Generates a histogram of the model 
+hist(Data_Scale$AvgScale, breaks = 30)
+#Summary of skill 
+print(summary(Data_Scale$AvgScale))
 ```
 
 This does a kluster model for skilled and unskilled players. 
@@ -219,7 +257,7 @@ Skill_Brack_Avg <- kmeans(Data_Scale_Avg[,c(14,19)], 3, iter.max = 10, nstart = 
 print(Skill_Brack_Avg)
 
 #Plots the K-Means Model for AVG
-Avg_Cluster_Model <- fviz_cluster(Skill_Brack_Avg, data = Data_Scale[,c(14,19)],
+Avg_Cluster_Model <- fviz_cluster(Skill_Brack_Avg, data = Data_Scale_Avg[,c(14,19)],
              palette = c("#00AFBB", "#E7B800","#8c00f0"),
              geom = "point",
              ellipse.type = "convex", 
@@ -230,7 +268,7 @@ Avg_Cluster_Model <- fviz_cluster(Skill_Brack_Avg, data = Data_Scale[,c(14,19)],
    labs(title = " Avg Cluster Plot", 
         x = "Win Rate", 
         y = "Avg Scaled Values")
- 
+
  
 print(Avg_Cluster_Model)
 
@@ -239,11 +277,11 @@ print(Avg_Cluster_Model)
 set.seed(20)
 Data_Scale_Sum <- data.frame(Data_Scale[,-20])
 #Does a K-Means model => Breaks the data into Skilled and Unskilled (??)
- Skill_Brack_Sum<- kmeans(Data_Scale[,c(14,19)], 3, iter.max = 10, nstart = 1)
+ Skill_Brack_Sum<- kmeans(Data_Scale_Sum[,c(14,19)], 3, iter.max = 10, nstart = 1)
  print(Skill_Brack_Sum)
 
 #Plots the K-Means Model for SUM
- Sum_Cluster_Model <- fviz_cluster(Skill_Brack_Sum, data = Data_Scale[,c(14,19)],
+ Sum_Cluster_Model <- fviz_cluster(Skill_Brack_Sum, data = Data_Scale_Sum[,c(14,19)],
              palette = c("#00AFBB", "#E7B800","#8c00f0"),
              geom = "point",
              ellipse.type = "convex", 
@@ -267,7 +305,7 @@ print(Sum_Cluster_Model)
 #Adds the Cluster value to the AVG Dataframe 
 Data_Scale_Avg$clusterValue_Avg <- as.factor(Skill_Brack_Avg$cluster)
 #Adds the CLuster value to to the SUM Dataframe
-Data_Scale_Sum$clusterValue_Avg <- as.factor(Skill_Brack_Sum$cluster)
+Data_Scale_Sum$clusterValue_Sum <- as.factor(Skill_Brack_Sum$cluster)
  
 #Adds both to the main Scaled Frame
 Data_Scale$clusterValue_Sum <- as.factor(Skill_Brack_Sum$cluster)
@@ -280,3 +318,137 @@ print(Data_Scale)
 
 
 ```
+```{r}
+set.seed(20)
+#Does a K-Means model => Breaks the data into Skilled and Unskilled (??)
+Data_Scale_Avg <- data.frame(Data_Scale[,-19])
+Skill_Brack_Avg_6 <- kmeans(Data_Scale_Avg[,c(14,19)], 6, iter.max = 10, nstart = 1)
+print(Skill_Brack_Avg_6)
+
+#Plots the K-Means Model for AVG
+Avg_Cluster_Model_6 <- fviz_cluster(Skill_Brack_Avg_6, data = Data_Scale[,c(14,19)],
+             palette = c("#00AFBB", "#E7B800","#8c00f0","green","red","violet"),
+             geom = "point",
+             ellipse.type = "convex", 
+             ggtheme = theme_bw()
+             )
+
+ Avg_Cluster_Model_6 <- Avg_Cluster_Model_6 + 
+   labs(title = " Avg Cluster Plot", 
+        x = "Win Rate", 
+        y = "Avg Scaled Values")
+ 
+print(Avg_Cluster_Model_6)
+
+
+Data_Scale_Avg$clusterValue_Avg_6 <- as.factor(Skill_Brack_Avg_6$cluster)
+print(Data_Scale)
+```
+
+```{r}
+Data_Scale_Avg
+
+```
+For group of 3
+```{r}
+knn_df_3 <- Data_Scale_Avg[,-c(20,22)]
+print(knn_df_3)
+
+
+# Calculate the number of observations for training
+train_indices_3 <- sample(1:nrow(knn_df_3), size = floor(split_ratio * nrow(knn_df_3)))
+
+# Split the data
+train_data_3 <- knn_df_3[train_indices_3, ]
+test_data_3 <- knn_df_3[-train_indices_3, ]
+
+# Setting the seed for reproducibility
+set.seed(11)
+split_ratio <- 0.7 # Assuming a 70-30 split for training and validation
+
+# Splitting the dataset
+knn_train_indices_3 <- sample(1:nrow(knn_df_3), size = floor(split_ratio * nrow(knn_df_3)))
+train_data_knn_3 <- knn_df_3[knn_train_indices_3, ]
+test_data_knn_3 <- knn_df_3[-knn_train_indices_3, ]
+train_labels_3 <- knn_df_3$clusterValue_Avg[knn_train_indices_3]
+test_labels_3 <- knn_df_3$clusterValue_Avg[-knn_train_indices_3]
+
+
+# Preprocess the data (excluding the label column)
+norm.values_3 <- preProcess(train_data_knn_3[, -20], method = c("center", "scale"))
+train_norm_3 <- predict(norm.values_3, train_data_knn_3[, -20])
+test_norm_3 <- predict(norm.values_3, test_data_knn_3[, -20])
+
+# Ensure labels are factors with the same levels
+train_labels_3 <- factor(train_labels_3)
+test_labels_3 <- factor(test_labels_3, levels = levels(train_labels_3))
+
+
+#Initialize a dataframe to store accuracy results 
+  accuracy.df <- data.frame(k = 1:30, Accuracy = rep(0, 30)) 
+  # Compute k-NN for different k values on the validation set 
+  set.seed(11)
+  for (i in 1:30) { knn.pred_3 <- knn(train = train_norm_3, test = test_norm_3, cl = train_labels_3, k = i) 
+  accuracy.df[i, "Accuracy"] <- confusionMatrix(knn.pred_3, test_labels_3)$overall["Accuracy"] } 
+  # Print the accuracy dataframe
+  print(accuracy.df)
+
+```
+For Group of 6
+```{r}
+knn_df <- Data_Scale_Avg[,-c(20,21)]
+print(knn_df)
+
+
+# Calculate the number of observations for training
+train_indices <- sample(1:nrow(knn_df), size = floor(split_ratio * nrow(knn_df)))
+
+# Split the data
+train_data <- knn_df[train_indices, ]
+test_data <- knn_df[-train_indices, ]
+
+# Setting the seed for reproducibility
+set.seed(11)
+split_ratio <- 0.6 # Assuming a 70-30 split for training and validation
+
+# Splitting the dataset
+knn_train_indices <- sample(1:nrow(knn_df), size = floor(split_ratio * nrow(knn_df)))
+train_data_knn <- knn_df[knn_train_indices, ]
+test_data_knn <- knn_df[-knn_train_indices, ]
+train_labels <- knn_df$clusterValue_Avg_6[knn_train_indices]
+test_labels <- knn_df$clusterValue_Avg_6[-knn_train_indices]
+
+
+# Preprocess the data (excluding the label column)
+norm.values <- preProcess(train_data_knn[, -20], method = c("center", "scale"))
+train_norm <- predict(norm.values, train_data_knn[, -20])
+test_norm <- predict(norm.values, test_data_knn[, -20])
+
+# Ensure labels are factors with the same levels
+train_labels <- factor(train_labels)
+test_labels <- factor(test_labels, levels = levels(train_labels))
+
+
+#Initialize a dataframe to store accuracy results 
+  accuracy.df <- data.frame(k = 1:30, Accuracy = rep(0, 30)) 
+  # Compute k-NN for different k values on the validation set 
+  set.seed(11)
+  for (i in 1:30) { knn.pred <- knn(train = train_norm, test = test_norm, cl = train_labels, k = i) 
+  accuracy.df[i, "Accuracy"] <- confusionMatrix(knn.pred, test_labels)$overall["Accuracy"] } 
+  # Print the accuracy dataframe
+  print(accuracy.df)
+
+```
+
+```{r}
+knn.pred_3 <- knn(train = train_norm_3, test = test_norm_3, cl = train_labels_3, k = 4)
+
+# Align levels of knn.pred to match test_labels
+knn.pred <- factor(knn.pred_3, levels = levels(test_labels_3))
+
+# Evaluate the model with confusion matrix
+confusion <- confusionMatrix(knn.pred_3, test_labels_3)
+print(confusion)
+
+```
+
